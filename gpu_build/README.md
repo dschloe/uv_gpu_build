@@ -108,7 +108,7 @@ Remove-Item -Force .\uv.lock
 
 ```bash
 uv run python notebooks/lecture_install_verify_all.py
-uv run python streamlit_verify.py
+uv run streamlit run app.py
 ```
 
 이 명령어는 uv가 현재 디렉토리에 존재하는 `.venv`(또는 표준 Python 가상환경 폴더)를 감지해, 그 환경에서 파이썬 스크립트를 실행합니다.  

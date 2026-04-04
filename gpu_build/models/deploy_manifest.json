@@ -1,0 +1,5 @@
+{
+  "sklearn_model": "/Users/evan/programming_edu/uv_gpu_build/gpu_build/models/sklearn_iris_rf.joblib",
+  "yolo_weights": "/Users/evan/programming_edu/uv_gpu_build/gpu_build/models/yolov8n.pt",
+  "torch_device_hint": "mps"
+}

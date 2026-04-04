@@ -3,36 +3,53 @@ import os
 import sys
 import platform
 
+# matplotlib 폰트 캐시 문제 사전 방지
+try:
+    import matplotlib
+    import matplotlib.font_manager as fm
+    
+    # 폰트 캐시 디렉토리 초기화
+    cache_dir = fm.get_cachedir()
+    if os.path.exists(cache_dir):
+        import shutil
+        try:
+            shutil.rmtree(cache_dir)
+        except:
+            pass
+    
+    # 폰트 매니저 재구성
+    fm.fontManager.ttflist = []
+    fm.fontManager.afmlist = []
+    
+    # 경고 메시지 억제
+    import warnings
+    warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
+    
+    matplotlib.use('Agg')  # GUI 없이 실행
+except Exception:
+    pass
+
 def set_korean_font_for_matplotlib():
-    """OS별 한글폰트를 자동 선택하여 matplotlib에 적용 (Win/Mac/Linux 공용)"""
+    """macOS: AppleGothic, Windows: 맑은 고딕"""
     try:
         import matplotlib
-        import matplotlib.font_manager as fm
+        import warnings
+        warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
 
-        font_names = []
+        # OS별 폰트 설정
         if sys.platform.startswith('darwin'):
-            # macOS: AppleGothic, NanumGothic, Malgun Gothic (in case user installed)
-            font_names = ["AppleGothic", "NanumGothic", "Malgun Gothic"]
+            # macOS: AppleGothic
+            matplotlib.rcParams['font.sans-serif'] = ['AppleGothic']
         elif sys.platform.startswith('win'):
-            # Windows: Malgun Gothic, NanumGothic
-            font_names = ["Malgun Gothic", "NanumGothic", "AppleGothic"]
+            # Windows: 맑은 고딕
+            matplotlib.rcParams['font.sans-serif'] = ['Malgun Gothic']
         else:
-            # Linux: NanumGothic
-            font_names = ["NanumGothic", "AppleGothic", "Malgun Gothic"]
-
-        found_font = False
-        for fontname in font_names:
-            matches = [f for f in fm.findSystemFonts(fontpaths=None, fontext='ttf')
-                       if fontname in fm.FontProperties(fname=f).get_name()]
-            if matches:
-                matplotlib.rc("font", family=fontname)
-                found_font = True
-                break
-        if not found_font:
-            # 마지막 대안: 나눔고딕이 미설치 시 Arial로 fallback (한글 미지원)
-            matplotlib.rc("font", family="Arial")
-        # 폰트 적용 후 한글깨짐 방지
+            # Linux: 맑은 고딕
+            matplotlib.rcParams['font.sans-serif'] = ['Malgun Gothic']
+        
+        matplotlib.rcParams['font.family'] = 'sans-serif'
         matplotlib.rcParams['axes.unicode_minus'] = False
+        
     except ImportError:
         pass
 
