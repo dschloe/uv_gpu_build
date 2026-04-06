@@ -1,0 +1,39 @@
+# 프로젝트 데이터·가중치 (먼저 무시)
+models/
+data/
+
+# 가상환경
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# 도구·캐시
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 환경·로컬 설정
+.env
+.env.*
+!.env.example
+
+# OS
+.Desktop.ini
+Thumbs.db
+
+# 다운로드된 YOLO 가중치(루트에 생길 수 있음)
+/yolov8n.pt
