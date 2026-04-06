@@ -26,7 +26,7 @@ dependencies = [
     "plotly>=5.22.0",
     "pillow>=10.0.0",
 
-    # ── 컴퓨터 비전 (torch/torchvision → CUDA 12.8 인덱스) ───
+    # ── 컴퓨터 비전 (torch/torchvision → optional extra의 PyTorch 인덱스) ───
     "opencv-python>=4.10.0",
     "ultralytics>=8.3.0",
 
@@ -43,10 +43,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Select ONE:
+# Select ONE (cpu | cu118 | cu128):
 #   uv sync --extra cpu
-#   uv sync --extra cu128
+#   uv sync --extra cu118   # 노트북·구형 GPU 등 호환 우선 (CUDA 11.8 휠)
+#   uv sync --extra cu128   # 비교적 최신 드라이버 (CUDA 12.8 휠)
 cpu = [
+    "torch>=2.0.0",
+    "torch!=2.4.0; sys_platform == 'win32'",
+    "torchvision>=0.15.0",
+]
+cu118 = [
     "torch>=2.0.0",
     "torch!=2.4.0; sys_platform == 'win32'",
     "torchvision>=0.15.0",
@@ -61,6 +67,7 @@ cu128 = [
 conflicts = [
   [
     { extra = "cpu" },
+    { extra = "cu118" },
     { extra = "cu128" },
   ],
 ]
@@ -69,16 +76,23 @@ conflicts = [
 # https://docs.astral.sh/uv/guides/integration/pytorch/#configuring-accelerators-with-optional-dependencies
 torch = [
     { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu118", extra = "cu118" },
     { index = "pytorch-cu128", extra = "cu128" },
 ]
 torchvision = [
     { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu118", extra = "cu118" },
     { index = "pytorch-cu128", extra = "cu128" },
 ]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
 explicit = true
 
 [[tool.uv.index]]
