@@ -75,10 +75,26 @@ uv sync --extra cu128
 
 ## 4. 앱 실행 (Streamlit)
 
-프로젝트 루트에서:
+PyTorch는 **optional extra**(`cpu` / `cu118` / `cu128`)에만 들어 있습니다. **`uv sync` 때 고른 extra와 같은 이름을 `uv run`에도 붙이는 것**을 권장합니다. 그렇지 않으면 `uv run`이 실행 직전에 환경을 맞추면서 `torch`·`torchvision` 두 패키지가 **다른 휠로 갈아끼워지는** 일이 생길 수 있고, 터미널에 `Uninstalled 2` / `Installed 2` 같은 메시지가 뜰 수 있습니다. (GPU로 맞춰 두었는데 CPU 휠로 바뀐 것처럼 보일 수 있습니다.)
+
+프로젝트 루트에서, **위에서 `uv sync`에 쓴 extra와 동일하게** 실행합니다.
+
+**CPU로 설치한 경우 (`uv sync --extra cpu`)**
 
 ```bash
-uv run streamlit run app.py
+uv run --extra cpu streamlit run app.py
+```
+
+**GPU — cu118으로 설치한 경우**
+
+```bash
+uv run --extra cu118 streamlit run app.py
+```
+
+**GPU — cu128으로 설치한 경우**
+
+```bash
+uv run --extra cu128 streamlit run app.py
 ```
 
 브라우저에서 열리는 페이지에서 순서대로 버전 출력 → sklearn → PyTorch → YOLO 흐름을 확인할 수 있습니다.
@@ -127,7 +143,8 @@ uv sync --reinstall --extra cu118
 **PowerShell**
 
 ```powershell
-Remove-Item -Recurse -Force .venv
+Remove-Item -Recurse -Force .venv # 단일 폴더 1개개
+Remove-Item -Recurse -Force .venv, data, models
 ```
 
 **CMD**
@@ -148,6 +165,7 @@ rm -rf .venv
 
 ```bash
 uv cache clean
+uv cache clean --force
 ```
 
 이후 다시:
@@ -156,6 +174,7 @@ uv cache clean
 uv sync --extra cpu
 # 또는 GPU extra 하나
 uv sync --extra cu118
+uv sync --extra cu128
 ```
 
 ### 원인 파악을 위해 로그·환경 확인

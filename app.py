@@ -164,19 +164,29 @@ def build_and_test_yolov8(models: Path) -> None:
     target = models / "yolov8n.pt"
     root_weights = PROJECT_ROOT / "yolov8n.pt"
     try:
-        if target.is_file():
+        # 가중치는 항상 models/yolov8n.pt 한 곳만 사용
+        if root_weights.is_file():
+            if not target.is_file():
+                shutil.move(str(root_weights), target)
+                st.info(f"YOLO: 프로젝트 루트의 가중치를 `{target.relative_to(PROJECT_ROOT)}`(으)로 옮겼습니다.")
+            else:
+                try:
+                    root_weights.unlink()
+                except OSError:
+                    pass
+
+        if not target.is_file():
+            # Ultralytics는 cwd에 받으므로 models/에서 받아 경로를 고정
+            prev = os.getcwd()
+            try:
+                os.chdir(models)
+                model = YOLO("yolov8n.pt")
+            finally:
+                os.chdir(prev)
+            st.info(f"YOLO: 가중치를 `{target.relative_to(PROJECT_ROOT)}`에 저장했습니다.")
+        else:
             model = YOLO(str(target))
             st.info(f"YOLO: 기존 가중치 로드 — {target.name}")
-        else:
-            model = YOLO("yolov8n.pt")
-            if root_weights.is_file() and not target.is_file():
-                shutil.copy(root_weights, target)
-                st.info(f"YOLO: 내려받은 가중치를 {target.name}(으)로 복사했습니다.")
-            elif not target.is_file():
-                st.warning(
-                    "가중치가 `models/yolov8n.pt`에 없습니다. "
-                    "프로젝트 루트에 `yolov8n.pt`가 있으면 `models/`로 복사한 뒤 다시 실행하세요."
-                )
 
         imgs = load_sample_images()
         rgb = imgs.images[1]
